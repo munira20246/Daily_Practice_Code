@@ -1,0 +1,48 @@
+from pathlib import Path
+import csv
+from datetime import datetime
+
+import matplotlib.pyplot as plt
+
+path = Path("weather_data/dhaka_weather_2024-2025_full.csv")
+lines = path.read_text().splitlines()
+
+reader = csv.reader(lines)
+header_row = next(reader)
+
+dates, prcps = [], []
+place_name = ''
+
+for row in reader:
+    if not place_name:
+        place_name = row[1]
+
+    current_date = datetime.strptime(row[2], '%Y-%m-%d')
+
+    try:
+        prcp = float(row[3])
+
+    except ValueError:
+        print(f"Missing data for {current_date}")
+
+    else:
+        dates.append(current_date)
+        prcps.append(prcp)
+
+
+plt.style.use('seaborn-v0_8')
+fig, ax = plt.subplots()
+ax.plot(dates, prcps, color='red')
+
+title = f"Daily PRCP 2024-2025\n{place_name}"
+ax.set_title(title, fontsize=18)
+ax.set_xlabel("", fontsize=10)
+fig.autofmt_xdate()
+ax.set_ylabel("PRCPs", fontsize=10)
+ax.tick_params(labelsize=9)
+
+plt.show()
+    
+
+
+
